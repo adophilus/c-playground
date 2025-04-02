@@ -1,7 +1,17 @@
+#include <stdbool.h>
+#include <stddef.h>
+
 typedef struct {
   char *short_name;
   char *long_name;
-} ParserOption;
+} ParserArgument;
+
+typedef struct {
+  char *short_name;
+  char *long_name;
+  bool is_checked;
+  char *value;
+} InternalParserArgument;
 
 typedef struct {
   char *short_name;
@@ -10,8 +20,11 @@ typedef struct {
 } ParserResult;
 
 typedef struct {
-  ParserOption *options;
+  InternalParserArgument *arguments;
+  size_t argument_length;
   ParserResult *results;
 } Parser;
 
-Parser *init_parser(ParserOption *options);
+Parser *parser_init();
+void parser_add_argument(Parser *parser, ParserArgument argument);
+void parser_parse(Parser *parser, int arguments_count, char **arguments);
