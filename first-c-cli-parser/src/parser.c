@@ -9,17 +9,38 @@ Parser *parser_init() {
   return parser;
 }
 
-void parser_add_argument(Parser *parser, ParserArgument option) {
-  parser->arguments = realloc(parser->arguments, sizeof(ParserArgument) *
-                                                     parser->argument_length++);
-  InternalParserArgument internal_parser_option = {
-      .short_name = option.short_name,
-      .long_name = option.long_name,
-      .is_checked = false};
-  parser->arguments[parser->argument_length] = internal_parser_option;
+void parser_add_argument(Parser *parser, ParserArgument argument) {
+  size_t argument_index = parser->argument_length;
+  size_t parser_arguments_size =
+      sizeof(ParserArgument) * ++parser->argument_length;
+
+  /* fprintf(stderr, "Parser argument size: %ld\n", parser_arguments_size); */
+  /* fprintf(stderr, "argument_index = %ld\n", argument_index); */
+  /* fprintf(stderr, "parser->argument_length = %ld\n",
+   * parser->argument_length); */
+
+  void *arguments = realloc(parser->arguments, parser_arguments_size);
+  if (arguments == NULL) {
+    fprintf(stderr, "Failed to reallocate memory for arguments\n");
+    exit(1);
+  }
+
+  parser->arguments = arguments;
+
+  /* InternalParserArgument internal_parser_argument = { */
+  /*     .short_name = argument.short_name, */
+  /*     .long_name = argument.long_name, */
+  /*     .is_checked = false}; */
+  /* parser->arguments[argument_index] = internal_parser_argument; */
+
+  parser->arguments[argument_index].short_name = argument.short_name;
+  parser->arguments[argument_index].long_name = argument.long_name;
+  parser->arguments[argument_index].is_checked = false;
 }
 
 void parser_parse(Parser *parser, int arguments_count, char **arguments) {
+  fprintf(stderr, "Beginning parsing...\n");
+
   InternalParserArgument *current_parser_argument_being_checked;
 
   for (int i = 0; i < arguments_count; i++) {
@@ -50,4 +71,6 @@ void parser_parse(Parser *parser, int arguments_count, char **arguments) {
       }
     }
   }
+
+  fprintf(stderr, "Done parsing...\n");
 }
